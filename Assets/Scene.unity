@@ -113,10 +113,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15b383cbebc63e84cb203e2249eb3ab4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  meshes:
+  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: 0959999ff6609ce40bae5e3bcd25c34e, type: 2}
-  maxDepth: 4
+  maxDepth: 5
   childScale: .5
+  spawnProbability: .850000024
+  maxRotationSpeed: 50
+  maxTwist: 20
 --- !u!1 &1353304693
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,8 +201,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1353304693}
-  m_LocalRotation: {x: .0594490804, y: -.0503516011, z: -.00302044512, w: .99695611}
-  m_LocalPosition: {x: 2.46000004, y: 2.52999997, z: -10.2700005}
+  m_LocalRotation: {x: .0594153106, y: -.609908879, z: -.00362444785, w: .790232778}
+  m_LocalPosition: {x: 2.72000003, y: .419999987, z: .0500000007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1893081230}

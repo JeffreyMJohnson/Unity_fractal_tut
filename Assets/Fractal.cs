@@ -4,41 +4,103 @@ using System.Collections;
 public class Fractal : MonoBehaviour
 {
 
-    public Mesh mesh;
+    public Mesh[] meshes;
     public Material material;
     public int maxDepth;
     public float childScale;
+    public float spawnProbability;
+    public float maxRotationSpeed;
+    public float maxTwist;
 
     private int depth;
+    private Material[,] materials;
+    private float rotationSpeed;
+
+    private void InitializeMaterials()
+    {
+        materials = new Material[maxDepth + 1,2];
+        for (int i = 0; i <= maxDepth; ++i)
+        {
+            float t = i / (maxDepth - 1f);
+            t *= t;
+            materials[i,0] = new Material(material);
+            materials[i,0].color = Color.Lerp(Color.white, Color.yellow, t);
+            materials[i, 1] = new Material(material);
+            materials[i, 1].color = Color.Lerp(Color.white, Color.cyan, t);
+        }
+        materials[maxDepth, 0].color = Color.magenta;
+        materials[maxDepth, 1].color = Color.red;
+    }
 
     // Use this for initialization
-    void Start()
+    public void Start()
     {
-        gameObject.AddComponent<MeshFilter>().mesh = mesh;
-        gameObject.AddComponent<MeshRenderer>().material = material;
+        rotationSpeed = Random.Range(-maxRotationSpeed, maxRotationSpeed);
+        transform.Rotate(Random.Range(-maxTwist, maxTwist), 0f, 0f);
+        if (materials == null)
+        {
+            InitializeMaterials();
+        }
+        gameObject.AddComponent<MeshFilter>().mesh = meshes[Random.Range(0, meshes.Length)];
+        gameObject.AddComponent<MeshRenderer>().material = materials[depth, Random.Range(0,2)];
         if (depth < maxDepth)
         {
-            new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, Vector3.up);
-            new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, Vector3.right);
+            StartCoroutine(CreateChildren());
+
         }
 
     }
 
-    private void Initialize(Fractal parent, Vector3 direction)
+    private void Update()
     {
-        mesh = parent.mesh;
-        material = parent.material;
+        transform.Rotate(0f, 30f * Time.deltaTime, 0f);
+    }
+
+    private static Vector3[] childDirections = 
+    {
+        Vector3.up,
+        Vector3.right,
+        Vector3.left,
+        Vector3.forward,
+        Vector3.back
+
+    };
+
+    private static Quaternion[] childOrientations = {
+        Quaternion.identity,
+        Quaternion.Euler(0f,0f,-90f),
+        Quaternion.Euler(0f,0f,90f),
+        Quaternion.Euler(90f,0f,0f),
+        Quaternion.Euler(90f,0f,0f)
+    };
+
+
+    private IEnumerator CreateChildren()
+    {
+
+        for (int i = 0; i < childDirections.Length; ++i)
+        {
+            if (Random.value < spawnProbability)
+            {
+                yield return new WaitForSeconds(Random.Range(.1f, .5f));
+                new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, i); 
+            }
+        }
+    }
+
+    private void Initialize(Fractal parent, int childIndex)
+    {
+        meshes = parent.meshes;
+        materials = parent.materials;
         maxDepth = parent.maxDepth;
         depth = parent.depth + 1;
         childScale = parent.childScale;
+        spawnProbability = parent.spawnProbability;
+        maxRotationSpeed = parent.maxRotationSpeed;
+        maxTwist = parent.maxTwist;
         transform.parent = parent.transform;
         transform.localScale = Vector3.one * childScale;
-        transform.localPosition = direction * (0.5f + 0.5f * childScale);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        transform.localPosition = childDirections[childIndex] * (0.5f + 0.5f * childScale);
+        transform.localRotation = childOrientations[childIndex];
     }
 }
